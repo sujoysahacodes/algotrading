@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  algotrading:
+    build: .
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - ./config:/app/config
+    environment:
+      - PYTHONPATH=/app/src
+    depends_on:
+      - timescaledb
+    networks:
+      - algotrading-network
+
+  timescaledb:
+    image: timescale/timescaledb:latest-pg14
+    environment:
+      - POSTGRES_DB=algotrading
+      - POSTGRES_USER=algouser
+      - POSTGRES_PASSWORD=algopass
+    ports:
+      - "5432:5432"
+    volumes:
+      - timescaledb_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - algotrading-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - algotrading-network
+
+volumes:
+  timescaledb_data:
+  redis_data:
+
+networks:
+  algotrading-network:
+    driver: bridge

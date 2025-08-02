@@ -1,0 +1,120 @@
+# Algorithmic Trading System Configuration
+
+# Data Sources Configuration
+data:
+  sources:
+    yahoo:
+      enabled: true
+    openbb:
+      enabled: false
+      api_key: ${OPENBB_API_KEY}
+    alpaca:
+      enabled: false
+      api_key: ${ALPACA_API_KEY}
+      secret_key: ${ALPACA_SECRET_KEY}
+  storage:
+    type: sqlite
+    path: data/market_data.db
+  frequency:
+    default: 1min
+    backtest: 1D
+    live: 15min
+
+# Trading Strategies Configuration
+strategies:
+  trend_following:
+    ema_adx:
+      ema_fast: 12
+      ema_slow: 26
+      adx_period: 14
+      adx_threshold: 25
+    macd:
+      fast_period: 12
+      slow_period: 26
+      signal_period: 9
+    fx_trend:
+      short_interval: 30s
+      long_interval: 5min
+      trend_threshold: 0.02
+  mean_reversion:
+    zscore:
+      lookback_window: 20
+      entry_threshold: 2.0
+      exit_threshold: 0.5
+    ou_process:
+      lookback_window: 100
+      half_life: 10
+      entry_threshold: 2.0
+
+# Risk Management Configuration
+risk:
+  position_sizing:
+    method: kelly
+    kelly_fraction: 0.25
+    max_position_size: 0.1
+  stop_loss: 0.02
+  take_profit: 0.04
+  max_portfolio_risk: 0.1
+  var_confidence: 0.95
+  max_drawdown: 0.15
+
+# Broker Configuration
+brokers:
+  alpaca:
+    base_url: https://paper-api.alpaca.markets
+    data_url: https://data.alpaca.markets
+    api_key: ${ALPACA_API_KEY}
+    secret_key: ${ALPACA_SECRET_KEY}
+    paper_trading: true
+  ib:
+    host: localhost
+    port: 7497
+    client_id: 1
+    paper_trading: true
+
+# Backtesting Configuration
+backtesting:
+  initial_capital: 100000
+  commission: 0.001
+  slippage: 0.0005
+  benchmark: SPY
+
+# Live Trading Configuration
+live_trading:
+  enabled: false
+  mode: paper  # paper or live
+  heartbeat_interval: 30  # seconds
+  order_timeout: 60  # seconds
+  max_orders_per_minute: 10
+
+# Database Configuration
+database:
+  type: timescaledb
+  host: localhost
+  port: 5432
+  database: algotrading
+  username: ${DB_USERNAME}
+  password: ${DB_PASSWORD}
+
+# Monitoring and Alerts
+monitoring:
+  dashboard:
+    enabled: true
+    port: 8501
+  alerts:
+    email:
+      enabled: false
+      smtp_server: smtp.gmail.com
+      smtp_port: 587
+      username: ${EMAIL_USERNAME}
+      password: ${EMAIL_PASSWORD}
+    slack:
+      enabled: false
+      webhook_url: ${SLACK_WEBHOOK_URL}
+
+# Logging Configuration
+logging:
+  level: INFO
+  file: logs/algotrading.log
+  rotation: 1 day
+  retention: 30 days
